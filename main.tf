@@ -77,58 +77,6 @@ module "security_group" {
   egress_rules        = ["all-all"]
 }
 
-resource "aws_iam_role" "node" {
-  name = "${var.env_name}-k8s-minikube"
-
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "ec2.amazonaws.com"
-      },
-      "Effect": "Allow",
-      "Sid": ""
-    }
-  ]
-}
-EOF
-}
-
-resource "aws_iam_policy" "node" {
-  name        = "${var.env_name}-k8s-minikube"
-  path        = "/"
-  description = "Policy for role ${var.env_name}-k8s-minikube"
-  policy      = <<EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "ec2:*",
-                "elasticloadbalancing:*"
-                ],
-            "Resource": "*"
-        }
-    ]
-}
-EOF
-}
-
-resource "aws_iam_policy_attachment" "node" {
-  name       = "${var.env_name}-k8s-minikube"
-  roles      = [aws_iam_role.node.name]
-  policy_arn = aws_iam_policy.node.arn
-}
-
-resource "aws_iam_instance_profile" "node" {
-  name = "${var.env_name}-k8s-minikube"
-  role = aws_iam_role.node.name
-}
-
 module "node" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "~> 2.0"
@@ -139,8 +87,6 @@ module "node" {
   instance_type    = var.instance_type
   key_name         = aws_key_pair.this.key_name
   subnet_id        = aws_subnet.minikube-subnet.id
-
-  iam_instance_profile = aws_iam_instance_profile.node.name
 
   vpc_security_group_ids = [module.security_group.this_security_group_id]
 
