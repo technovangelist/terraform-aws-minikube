@@ -1,6 +1,7 @@
 variable "env_name" {
   description = "String used as a prefix for AWS resources"
   type        = string
+  default     = "workshop"
 }
 
 variable "instance_type" {
