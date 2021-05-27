@@ -45,9 +45,9 @@ ln -s /usr/lib/cni /opt/cni/bin
 curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
 sudo dpkg -i minikube_latest_amd64.deb
 
-PUBIP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
-PUBDNS=$(curl -s http://169.254.169.254/latest/meta-data/public-hostname)
-FULLHOSTNAME=$(curl -s http://169.254.169.254/latest/meta-data/hostname)
+export PUBIP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
+export PUBDNS=$(curl -s http://169.254.169.254/latest/meta-data/public-hostname)
+export FULLHOSTNAME=$(curl -s http://169.254.169.254/latest/meta-data/hostname)
 
 sudo minikube config set driver none
 sudo minikube start \
