@@ -88,7 +88,7 @@ resource "aws_security_group" "minikube-sg" {
   }
   tags = {
     Name  = "minikube"
-    Owner = workshop
+    Owner = "workshop"
   }
 
 }
