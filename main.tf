@@ -6,8 +6,17 @@ terraform {
       source  = "invidian/sshcommand"
       version = "0.2.0"
     }
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 3.34"
+    }
   }
 }
+
+provider "aws" {
+  region = "us-west-2"
+}
+
 
 locals {
   bootstrap_file_name = "${path.module}/bootstrap.sh"

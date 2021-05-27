@@ -3,6 +3,15 @@ variable "env_name" {
   type        = string
   default     = "workshop"
 }
+variable "region" {
+  type    = string
+  default = "us-west-2"
+}
+
+variable "az" {
+  type    = string
+  default = "b"
+}
 
 variable "instance_type" {
   description = "Instance type"
