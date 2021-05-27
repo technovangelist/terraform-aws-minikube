@@ -61,7 +61,7 @@ module "security_group" {
 
   name        = "${var.env_name}-k8s-minikube"
   description = "K8s Kind Cluster"
-  vpc_id      = var.vpc_id
+  vpc_id      = aws_vpc.minikube-vpc.id
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
   ingress_rules       = ["ssh-tcp", "all-icmp", "all-tcp"]
@@ -129,7 +129,7 @@ module "node" {
   ami              = data.aws_ami.ubuntu_20_04.id
   instance_type    = var.instance_type
   key_name         = aws_key_pair.this.key_name
-  subnet_id        = var.subnet_id
+  subnet_id        = aws_subnet.minikube-subnet.id
 
   iam_instance_profile = aws_iam_instance_profile.node.name
 

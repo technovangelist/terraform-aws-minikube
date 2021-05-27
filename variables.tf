@@ -3,20 +3,10 @@ variable "env_name" {
   type        = string
 }
 
-variable "subnet_id" {
-  description = "ID of the AWS subnet"
-  type        = string
-}
-
-variable "vpc_id" {
-  description = "ID of the AWS VPC"
-  type        = string
-}
-
 variable "instance_type" {
   description = "Instance type"
   type        = string
-  default     = "t3a.large"
+  default     = "t3a.medium"
 }
 
 variable "instance_disk_size" {
