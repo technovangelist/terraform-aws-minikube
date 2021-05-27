@@ -16,7 +16,7 @@ variable "az" {
 variable "instance_type" {
   description = "Instance type"
   type        = string
-  default     = "t3a.medium"
+  default     = "t3.medium"
 }
 
 variable "instance_disk_size" {
