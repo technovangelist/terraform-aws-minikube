@@ -12,53 +12,39 @@ sudo apt-get install -y \
     conntrack \
     socat \
     containernetworking-plugins \
-    software-properties-common
+    software-properties-common docker.io
 
+curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+chmod +x ./kubectl
+sudo mv ./kubectl /usr/local/bin/kubectl
 
-# docker
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo usermod -aG docker ubuntu
 
-sudo add-apt-repository \
-   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-   $(lsb_release -cs) \
-   stable"
-
-sudo apt-get update
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io
-
-usermod -aG docker ubuntu
-
-# kubectl
-curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
-chmod +x kubectl
-sudo mv kubectl /usr/local/bin
 
 # helm
-snap install helm --classic
+sudo snap install helm --classic
 
-# fix CNI
-mkdir /opt/cni/
-ln -s /usr/lib/cni /opt/cni/bin
+
 
 # minikube 
 
-curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
-sudo dpkg -i minikube_latest_amd64.deb
+curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
 
 export PUBIP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
 export PUBDNS=$(curl -s http://169.254.169.254/latest/meta-data/public-hostname)
 export FULLHOSTNAME=$(curl -s http://169.254.169.254/latest/meta-data/hostname)
 
-sudo minikube config set driver none
-sudo minikube start \
-    --apiserver-name=$PUBDNS \
-    --apiserver-port=58443 \
-    --extra-config=apiserver.cloud-provider=aws \
-    --extra-config=controller-manager.cloud-provider=aws \
-    --extra-config=kubelet.cloud-provider=aws \
-    --extra-config=kubeadm.node-name=$FULLHOSTNAME \
-    --extra-config=kubelet.hostname-override=$FULLHOSTNAME
+# sudo minikube config set driver none
+# sudo minikube start \
+#     --apiserver-name=$PUBDNS \
+#     --apiserver-port=58443 \
+#     --extra-config=apiserver.cloud-provider=aws \
+#     --extra-config=controller-manager.cloud-provider=aws \
+#     --extra-config=kubelet.cloud-provider=aws \
+#     --extra-config=kubeadm.node-name=$FULLHOSTNAME \
+#     --extra-config=kubelet.hostname-override=$FULLHOSTNAME
     
+sudo minikube start --vm-driver=none
 
 sudo minikube addons enable metallb
 sudo minikube addons enable metrics-server
