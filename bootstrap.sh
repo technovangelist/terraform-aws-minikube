@@ -44,26 +44,26 @@ export FULLHOSTNAME=$(curl -s http://169.254.169.254/latest/meta-data/hostname)
 #     --extra-config=kubeadm.node-name=$FULLHOSTNAME \
 #     --extra-config=kubelet.hostname-override=$FULLHOSTNAME
     
-sudo minikube start --vm-driver=none
+minikube start --vm-driver=none
 
-sudo minikube addons enable metallb
-sudo minikube addons enable metrics-server
+minikube addons enable metallb
+minikube addons enable metrics-server
 
 
 # rename context
-sudo kubectl config rename-context minikube aws-minikube
+kubectl config rename-context minikube aws-minikube
 
 # ingress with hostports
-sudo helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-sudo helm repo add stable https://kubernetes-charts.storage.googleapis.com/
-sudo helm repo update
-sudo helm install ingress ingress-nginx/ingress-nginx --set controller.hostPort.enabled=true
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo add stable https://charts.helm.sh/stable
+helm repo update
+helm install ingress ingress-nginx/ingress-nginx --set controller.hostPort.enabled=true
 
 # delete standard storageclass
 # TODO: fix storage - 777 perms are invalid for some apps
-sudo kubectl annotate sc standard storageclass.kubernetes.io/is-default-class-
+kubectl annotate sc standard storageclass.kubernetes.io/is-default-class-
 
-cat << EOF | sudo kubectl apply -f-
+cat << EOF | kubectl apply -f-
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
@@ -78,10 +78,10 @@ EOF
 
 # aws labels
 
-sudo kubectl label node --all failure-domain.beta.kubernetes.io/region=$(curl --silent http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-sudo kubectl label node --all failure-domain.beta.kubernetes.io/zone=$(curl --silent http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r .availabilityZone)
-sudo kubectl taint nodes --all node-role.kubernetes.io/master-
-sudo kubectl label nodes --all node-role.kubernetes.io/master-
+kubectl label node --all failure-domain.beta.kubernetes.io/region=$(curl --silent http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
+kubectl label node --all failure-domain.beta.kubernetes.io/zone=$(curl --silent http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r .availabilityZone)
+kubectl taint nodes --all node-role.kubernetes.io/master-
+kubectl label nodes --all node-role.kubernetes.io/master-
 
 # metallb
 TMPCM=$(mktemp)
@@ -93,6 +93,6 @@ address-pools:
   - ${PUBIP}-${PUBIP}
 EOF
 
-sudo kubectl create configmap config --from-file=config=$TMPCM --dry-run=client -o yaml | \
-    sudo kubectl apply -f- -n metallb-system
-sudo kubectl delete pod -lapp=metallb -n metallb-system
+kubectl create configmap config --from-file=config=$TMPCM --dry-run=client -o yaml | \
+    kubectl apply -f- -n metallb-system
+kubectl delete pod -lapp=metallb -n metallb-system
